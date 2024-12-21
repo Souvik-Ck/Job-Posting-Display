@@ -1,0 +1,126 @@
+JobPostingController.cls
+
+public with sharing class JobPostingController {
+    
+    @AuraEnabled(cacheable=true)
+    public static List<JobPosting> getActiveJobPostings(String department) {
+        // Query active job postings
+        String query = 'SELECT Id, Job_Title__c, Location__c, Department__c, Total_Open_Positions__c, Posting_Date__c FROM Job_Posting__c WHERE Is_Active__c = TRUE';
+        
+        // Apply department filter if provided
+        if (department != null && department != '') {
+            query += ' AND Department__c = :department';
+        }
+        
+        query += ' ORDER BY Posting_Date__c DESC'; // Default sorting by Posting Date
+        
+        List<JobPosting> jobPostings = Database.query(query);
+        return jobPostings;
+    }
+}
+
+
+---------------------------------------------------------
+jobPostingList.js
+
+import { LightningElement, wire, track } from 'lwc';
+import getActiveJobPostings from '@salesforce/apex/JobPostingController.getActiveJobPostings';
+
+export default class JobPostingList extends LightningElement {
+    @track jobPostings = [];
+    @track department = '';
+    @track error;
+    
+    // Wire the Apex method to get active job postings
+    @wire(getActiveJobPostings, { department: '$department' })
+    wiredJobPostings({ error, data }) {
+        if (data) {
+            this.jobPostings = data;
+            this.error = undefined;
+        } else if (error) {
+            this.error = error;
+            this.jobPostings = [];
+        }
+    }
+
+    // Handle department filter change
+    handleDepartmentChange(event) {
+        this.department = event.target.value;
+    }
+
+    // Sorting functionality (by Posting Date)
+    sortJobPostingsByDate() {
+        this.jobPostings.sort((a, b) => new Date(b.Posting_Date__c) - new Date(a.Posting_Date__c));
+    }
+
+    // Sorting functionality (by Job Title)
+    sortJobPostingsByTitle() {
+        this.jobPostings.sort((a, b) => a.Job_Title__c.localeCompare(b.Job_Title__c));
+    }
+}
+--------------------------------------------------------------------------------------
+jobPostingList.html
+
+
+<template>
+    <lightning-card title="Active Job Postings">
+        <div class="slds-p-horizontal_medium">
+            <!-- Filter by Department -->
+            <lightning-combobox 
+                label="Department" 
+                value={department} 
+                options={departmentOptions} 
+                onchange={handleDepartmentChange}>
+            </lightning-combobox>
+
+            <lightning-button label="Sort by Date" onclick={sortJobPostingsByDate}></lightning-button>
+            <lightning-button label="Sort by Job Title" onclick={sortJobPostingsByTitle}></lightning-button>
+
+            <!-- Display Job Postings -->
+            <template if:true={jobPostings}>
+                <lightning-datatable 
+                    data={jobPostings} 
+                    columns={columns} 
+                    key-field="Id">
+                </lightning-datatable>
+            </template>
+
+            <template if:true={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>
+---------------------------------------------------------------------------------------------
+jobPostingList.js
+
+columns = [
+    {
+        label: 'Job Title',
+        fieldName: 'Job_Title__c',
+        sortable: true
+    },
+    {
+        label: 'Location',
+        fieldName: 'Location__c',
+        sortable: true
+    },
+    {
+        label: 'Department',
+        fieldName: 'Department__c',
+        sortable: true
+    },
+    {
+        label: 'Open Positions',
+        fieldName: 'Total_Open_Positions__c',
+        type: 'number',
+        sortable: true
+    },
+    {
+        label: 'Posting Date',
+        fieldName: 'Posting_Date__c',
+        type: 'date',
+        sortable: true
+    }
+];
+------------------------------------------------------------------------------------------------
