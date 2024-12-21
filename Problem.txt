@@ -1,0 +1,68 @@
+Business Need: 
+ Recruiters need an efficient way to view and manage active job postings within the Recruitment App. 
+ The current process involves navigating through multiple pages and lists, making it difficult to quickly find relevant postings. 
+ We want to provide a user-friendly interface that displays a consolidated list of active job postings with key details and filtering capabilities. 
+
+
+Functional Requirements: 
+ 
+1. Job Posting List Display: 
+* The interface should display a list of all active 'Job Posting' records. 
+* Each list item should include the following details: 
+* Job Title 
+* Location 
+* Department 
+* Number of Open Positions (from the 'Total Open Positions' field) 
+* Posting Date 
+* Any other relevant fields as identified 
+
+1. Filtering: 
+   Recruiters should be able to filter the list of job postings by 'Department'. 
+   The filtering mechanism should be intuitive and easy to use. 
+
+1. User Experience: 
+  The interface should be visually appealing and adhere to Salesforce Lightning Design System (SLDS) principles. 
+  Consider providing sorting options for the list (e.g., by Job Title, Posting Date). 
+
+
+Technical Requirements: 
+ 
+* Lightning Web Component (LWC): 
+  Develop an LWC to implement the job posting list display and filtering functionality. 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------
+Adhere to Cloudkaptan LWC Coding Standards and Best Practices, including: 
+  Clear and descriptive component and method names. 
+  Separation of concerns (UI, data access, logic). 
+  Use of Lightning Data Service (LDS) or UI API for efficient data retrieval. 
+  Lazy loading or conditional rendering for performance optimization. 
+  Error handling and user-friendly error messages. 
+  Thorough unit testing with Jest. 
+
+
+Additional Considerations: 
+ 
+* Error Handling: 
+  Implement error handling to gracefully manage potential issues during data retrieval or filtering. 
+  Display user-friendly error messages to guide users in case of errors. 
+
+* Testing: 
+ Write comprehensive Jest tests to cover various scenarios, including: 
+ Data retrieval and display. 
+ Filtering functionality. 
+ Error handling. 
+ User interactions. 
+
+* Cloudkaptan LWC Guidelines - Highlights: 
+* Compose Components: Leverage base components and existing reusable components whenever possible. 
+* Component Communication: Use appropriate communication mechanisms (properties, events, LMS) based on the component hierarchy and data flow. 
+* Styling: Utilize SLDS for styling and responsiveness. 
+* Performance: Optimize performance through lazy loading, conditional rendering, and efficient data retrieval. 
+* Security: 
+ 
+
+ 
+ 
+
