@@ -1,0 +1,101 @@
+<template>
+    <lightning-card title="Job Opportunities" class="job-posting-container">
+        <div class="slds-p-around_medium">
+            <div class="search-filter-container slds-grid slds-gutters slds-mb-medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="search"
+                        label="Search Jobs"
+                        placeholder="Search by job title, department, or location"
+                        onchange={handleSearch}
+                        variant="outlined">
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        name="department"
+                        label="Filter by Department"
+                        value={selectedDepartment}
+                        options={departments}
+                        onchange={handleDepartmentFilter}
+                        placeholder="All Departments"
+                        variant="outlined">
+                    </lightning-combobox>
+                </div>
+            </div>
+ 
+            <template if:true={filteredJobPostings.length}>
+                <lightning-datatable
+                    class="custom-datatable"
+                    columns={columns}
+                    data={filteredJobPostings}
+                    key-field="Id"
+                    sorted-by={sortField}
+                    sorted-direction={sortDirection}
+                    onsort={onSort}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+ 
+            <template if:false={filteredJobPostings.length}>
+                <div class="no-results-container">
+                    <div class="no-results-icon">
+                        <lightning-icon
+                            icon-name="utility:no_results"
+                            size="large"
+                            alternative-text="No results">
+                        </lightning-icon>
+                    </div>
+                    <p class="no-results-message">
+                        No job postings found matching your criteria.
+                    </p>
+                </div>
+            </template>
+        </div>
+ 
+        <!-- Job Details Modal -->
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button
+                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close"
+                            onclick={closeModal}>
+                            <lightning-icon
+                                icon-name="utility:close"
+                                size="medium"
+                                alternative-text="Close">
+                            </lightning-icon>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">
+                            {selectedJobPosting.Job_Title__c}
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p><strong>Department:</strong> {selectedJobPosting.Department__c}</p>
+                        <p><strong>Location:</strong> {selectedJobPosting.Location__c}</p>
+                        <p><strong>Open Positions:</strong> {selectedJobPosting.Total_Open_Positions__c}</p>
+                        <p><strong>Posting Date:</strong>
+                            {selectedJobPosting.Posting_Date__c}
+                        </p>
+                        <template if:true={selectedJobPosting.Job_Description__c}>
+                            <h3 class="slds-text-heading_small slds-m-top_medium">Job Description</h3>
+                            <p>{selectedJobPosting.Job_Description__c}</p>
+                        </template>
+                        <template if:true={selectedJobPosting.Responsibilities__c}>
+                            <h3 class="slds-text-heading_small slds-m-top_medium">Responsibilities</h3>
+                            <p>{selectedJobPosting.Responsibilities__c}</p>
+                        </template>
+                        <template if:true={selectedJobPosting.Required_Skills__c}>
+                            <h3 class="slds-text-heading_small slds-m-top_medium">Required Skills</h3>
+                            <p>{selectedJobPosting.Required_Skills__c}</p>
+                        </template>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>
